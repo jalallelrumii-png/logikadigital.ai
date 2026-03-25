@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Logika Digital.ai — Sistem Bisnis Autopilot</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Instrument+Serif:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --black: #080808;
+  --dark: #0f0f0f;
+  --dark2: #161616;
+  --dark3: #1e1e1e;
+  --border: rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.12);
+  --text: #f2efe8;
+  --muted: #7a7670;
+  --dim: #3a3835;
+  --gold: #c9a84c;
+  --gold2: #e8c96a;
+  --gold-dim: rgba(201,168,76,0.12);
+  --gold-glow: rgba(201,168,76,0.06);
+  --white: #ffffff;
+  --ff-display: 'Bebas Neue', sans-serif;
+  --ff-serif: 'Instrument Serif', serif;
+  --ff-body: 'DM Sans', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--black);
+  color: var(--text);
+  font-family: var(--ff-body);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* CUSTOM CURSOR */
+.cursor {
+  position: fixed;
+  width: 8px; height: 8px;
+  background: var(--gold);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transition: transform 0.1s;
+  mix-blend-mode: difference;
+}
+.cursor-ring {
+  position: fixed;
+  width: 32px; height: 32px;
+  border: 1px solid rgba(201,168,76,0.4);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transition: all 0.12s ease;
+}
+@media (hover: none) { .cursor, .cursor-ring { display: none; } body { cursor: auto; } }
+
+/* GRAIN OVERLAY */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.025;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 500;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 48px;
+  border-bottom: 1px solid transparent;
+  transition: all 0.3s;
+}
+nav.scrolled {
+  background: rgba(8,8,8,0.92);
+  backdrop-filter: blur(20px);
+  border-color: var(--border);
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none;
+}
+.nav-logo-mark {
+  width: 32px; height: 32px;
+}
+.nav-logo-text {
+  font-family: var(--ff-display);
+  font-size: 20px;
+  letter-spacing: 1px;
+  color: var(--text);
+}
+.nav-logo-text span { color: var(--gold); }
+.nav-links {
+  display: flex; align-items: center; gap: 32px;
+  list-style: none;
+}
+.nav-links a {
+  color: var(--muted); font-size: 14px;
+  text-decoration: none;
+  letter-spacing: 0.3px;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--text); }
+.nav-cta {
+  padding: 9px 22px;
+  border: 1px solid var(--gold);
+  color: var(--gold) !important;
+  border-radius: 2px;
+  font-size: 13px !important;
+  font-weight: 500;
+  letter-spacing: 0.8px !important;
+  text-transform: uppercase;
+  transition: all 0.2s !important;
+}
+.nav-cta:hover {
+  background: var(--gold) !important;
+  color: var(--black) !important;
+}
+.hamburger {
+  display: none;
+  background: none; border: none;
+  color: var(--text); font-size: 22px;
+  cursor: pointer;
+}
+
+/* HERO */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  justify-content: flex-end;
+  padding: 0 48px 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 80% 20%, rgba(201,168,76,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 60% at 10% 80%, rgba(201,168,76,0.04) 0%, transparent 50%);
+}
+
+.hero-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 80px 80px;
+  mask-image: radial-gradient(ellipse 100% 80% at 50% 50%, black 20%, transparent 80%);
+}
+
+.hero-eyebrow {
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 20px;
+  display: flex; align-items: center; gap: 12px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.2s forwards;
+}
+.hero-eyebrow::before {
+  content: '';
+  width: 32px; height: 1px;
+  background: var(--gold);
+  display: block;
+}
+
+.hero-headline {
+  font-family: var(--ff-display);
+  font-size: clamp(72px, 11vw, 160px);
+  line-height: 0.9;
+  letter-spacing: 2px;
+  margin-bottom: 32px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.35s forwards;
+}
+.hero-headline .line2 {
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(201,168,76,0.5);
+  display: block;
+}
+.hero-headline .accent {
+  color: var(--gold);
+  font-family: var(--ff-serif);
+  font-style: italic;
+  font-size: 0.65em;
+  letter-spacing: 0;
+  display: inline;
+}
+
+.hero-bottom {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 40px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.5s forwards;
+}
+.hero-desc {
+  max-width: 420px;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.8;
+  font-weight: 300;
+}
+.hero-desc strong { color: var(--text); font-weight: 400; }
+
+.hero-actions {
+  display: flex; flex-direction: column; align-items: flex-end; gap: 16px;
+}
+.btn-gold {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 16px 36px;
+  background: var(--gold);
+  color: var(--black);
+  font-family: var(--ff-body);
+  font-size: 14px; font-weight: 500;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 2px;
+  transition: all 0.2s;
+  border: none; cursor: pointer;
+  white-space: nowrap;
+}
+.btn-gold:hover {
+  background: var(--gold2);
+  transform: translateY(-1px);
+}
+.btn-ghost {
+  display: inline-flex; align-items: center; gap: 8px;
+  color: var(--muted); font-size: 13px;
+  text-decoration: none;
+  letter-spacing: 0.3px;
+  transition: color 0.2s;
+  background: none; border: none; cursor: pointer;
+}
+.btn-ghost:hover { color: var(--text); }
+.btn-ghost svg { transition: transform 0.2s; }
+.btn-ghost:hover svg { transform: translateX(3px); }
+
+.hero-scroll {
+  position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  color: var(--dim); font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+  animation: float 2s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-6px); }
+}
+.scroll-line {
+  width: 1px; height: 40px;
+  background: linear-gradient(to bottom, var(--gold), transparent);
+}
+
+/* MARQUEE */
+.marquee-section {
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 18px 0;
+  overflow: hidden;
+  background: var(--dark);
+}
+.marquee-track {
+  display: flex; gap: 0;
+  animation: marquee 20s linear infinite;
+  white-space: nowrap;
+}
+.marquee-item {
+  display: flex; align-items: center; gap: 24px;
+  padding: 0 40px;
+  font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--muted);
+}
+.marquee-dot { color: var(--gold); font-size: 18px; }
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* SECTIONS */
+section { position: relative; }
+
+.section-label {
+  font-size: 11px; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--gold);
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 16px;
+}
+.section-label::before {
+  content: '';
+  width: 24px; height: 1px;
+  background: var(--gold);
+}
+
+/* PROBLEM */
+.problem {
+  padding: 120px 48px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+  align-items: center;
+}
+.problem-left h2 {
+  font-family: var(--ff-display);
+  font-size: clamp(42px, 5vw, 72px);
+  line-height: 1;
+  letter-spacing: 1px;
+  margin-bottom: 24px;
+}
+.problem-left h2 em {
+  font-family: var(--ff-serif);
+  font-style: italic;
+  color: var(--gold);
+  font-size: 0.85em;
+}
+.problem-left p {
+  color: var(--muted); line-height: 1.9; font-weight: 300;
+  max-width: 400px;
+}
+
+.problem-list {
+  display: flex; flex-direction: column; gap: 0;
+}
+.problem-item {
+  display: flex; align-items: flex-start; gap: 20px;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--border);
+  opacity: 0;
+  transform: translateX(20px);
+  transition: all 0.5s;
+}
+.problem-item.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+.problem-num {
+  font-family: var(--ff-display);
+  font-size: 48px; line-height: 1;
+  color: var(--dim);
+  flex-shrink: 0; width: 52px;
+}
+.problem-text h4 {
+  font-size: 16px; font-weight: 500;
+  margin-bottom: 4px;
+}
+.problem-text p { color: var(--muted); font-size: 14px; font-weight: 300; }
+
+/* SOLUTION */
+.solution {
+  padding: 120px 48px;
+  background: var(--dark);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.solution-header {
+  text-align: center; margin-bottom: 72px;
+}
+.solution-header h2 {
+  font-family: var(--ff-display);
+  font-size: clamp(48px, 6vw, 88px);
+  letter-spacing: 1px; line-height: 1;
+  margin-bottom: 16px;
+}
+.solution-header h2 span { color: var(--gold); }
+.solution-header p {
+  color: var(--muted); max-width: 480px;
+  margin: 0 auto; font-weight: 300;
+}
+
+.services-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+.service-card {
+  background: var(--dark);
+  padding: 40px 36px;
+  position: relative; overflow: hidden;
+  transition: background 0.3s;
+}
+.service-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--gold);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s;
+}
+.service-card:hover { background: var(--dark2); }
+.service-card:hover::before { transform: scaleX(1); }
+
+.service-num {
+  font-family: var(--ff-display);
+  font-size: 64px; color: var(--dim);
+  line-height: 1; margin-bottom: 24px;
+}
+.service-icon {
+  font-size: 28px; margin-bottom: 16px;
+}
+.service-card h3 {
+  font-size: 18px; font-weight: 500;
+  margin-bottom: 12px; letter-spacing: -0.3px;
+}
+.service-card p {
+  color: var(--muted); font-size: 14px;
+  line-height: 1.8; font-weight: 300;
+}
+.service-tags {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  margin-top: 20px;
+}
+.tag {
+  padding: 4px 10px;
+  border: 1px solid var(--border2);
+  border-radius: 2px;
+  font-size: 11px; color: var(--muted);
+  letter-spacing: 0.5px;
+}
+
+/* PROCESS */
+.process {
+  padding: 120px 48px;
+}
+.process-header { margin-bottom: 72px; }
+.process-header h2 {
+  font-family: var(--ff-display);
+  font-size: clamp(42px, 5vw, 72px);
+  letter-spacing: 1px;
+}
+.process-steps {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  position: relative;
+}
+.process-steps::before {
+  content: '';
+  position: absolute;
+  top: 28px; left: 28px; right: 28px;
+  height: 1px;
+  background: linear-gradient(to right, var(--gold), var(--border), var(--gold));
+}
+.step {
+  padding: 0 24px 0 0;
+  opacity: 0; transform: translateY(20px);
+  transition: all 0.5s;
+}
+.step.visible { opacity: 1; transform: translateY(0); }
+.step-num {
+  width: 56px; height: 56px;
+  border: 1px solid var(--gold);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--ff-display);
+  font-size: 22px; color: var(--gold);
+  margin-bottom: 24px;
+  background: var(--black);
+  position: relative; z-index: 1;
+}
+.step h4 {
+  font-size: 16px; font-weight: 500;
+  margin-bottom: 8px;
+}
+.step p { color: var(--muted); font-size: 14px; font-weight: 300; line-height: 1.7; }
+
+/* SOCIAL PROOF */
+.proof {
+  padding: 120px 48px;
+  background: var(--dark);
+  border-top: 1px solid var(--border);
+}
+.proof-header { text-align: center; margin-bottom: 64px; }
+.proof-header h2 {
+  font-family: var(--ff-display);
+  font-size: clamp(42px, 5vw, 72px);
+  letter-spacing: 1px;
+}
+.proof-header h2 span { color: var(--gold); }
+
+.testimonials {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+}
+.testimonial {
+  background: var(--dark2);
+  border: 1px solid var(--border);
+  padding: 32px;
+  position: relative;
+  transition: border-color 0.3s;
+}
+.testimonial:hover { border-color: var(--border2); }
+.testimonial::before {
+  content: '"';
+  position: absolute; top: 20px; right: 24px;
+  font-family: var(--ff-serif);
+  font-size: 72px; color: var(--dim);
+  line-height: 1;
+}
+.testi-text {
+  font-size: 15px; line-height: 1.8;
+  font-weight: 300; margin-bottom: 24px;
+  font-style: italic;
+  color: rgba(242,239,232,0.8);
+}
+.testi-author {
+  display: flex; align-items: center; gap: 12px;
+}
+.testi-avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--gold-dim);
+  border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--ff-display);
+  font-size: 16px; color: var(--gold);
+  flex-shrink: 0;
+}
+.testi-name { font-size: 14px; font-weight: 500; }
+.testi-role { font-size: 12px; color: var(--muted); }
+
+.stats-row {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 1px; background: var(--border);
+  border: 1px solid var(--border);
+  margin-top: 64px;
+}
+.stat-item {
+  background: var(--dark);
+  padding: 32px; text-align: center;
+}
+.stat-num {
+  font-family: var(--ff-display);
+  font-size: 52px; color: var(--gold);
+  letter-spacing: 1px; line-height: 1;
+  display: block; margin-bottom: 8px;
+}
+.stat-label { font-size: 13px; color: var(--muted); letter-spacing: 0.5px; }
+
+/* PRICING */
+.pricing {
+  padding: 120px 48px;
+}
+.pricing-header { text-align: center; margin-bottom: 64px; }
+.pricing-header h2 {
+  font-family: var(--ff-display);
+  font-size: clamp(42px, 5vw, 72px);
+  letter-spacing: 1px;
+}
+
+.pricing-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+  max-width: 900px; margin: 0 auto;
+}
+.pricing-card {
+  border: 1px solid var(--border);
+  padding: 40px 32px;
+  position: relative;
+  transition: all 0.3s;
+}
+.pricing-card:hover { border-color: var(--border2); }
+.pricing-card.featured {
+  border-color: var(--gold);
+  background: var(--gold-glow);
+}
+.featured-badge {
+  position: absolute; top: -1px; left: 50%; transform: translateX(-50%);
+  background: var(--gold); color: var(--black);
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 4px 16px;
+}
+.pricing-tier {
+  font-size: 12px; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--muted);
+  margin-bottom: 12px;
+}
+.pricing-price {
+  font-family: var(--ff-display);
+  font-size: 52px; color: var(--text);
+  letter-spacing: 1px; line-height: 1;
+  margin-bottom: 4px;
+}
+.pricing-price span {
+  font-family: var(--ff-body);
+  font-size: 18px; color: var(--muted);
+  font-weight: 300;
+}
+.pricing-desc {
+  font-size: 14px; color: var(--muted);
+  margin-bottom: 28px; font-weight: 300;
+}
+.pricing-features {
+  list-style: none; margin-bottom: 32px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.pricing-features li {
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 14px; font-weight: 300;
+}
+.pricing-features li::before {
+  content: '→';
+  color: var(--gold); flex-shrink: 0;
+  font-size: 12px; margin-top: 2px;
+}
+.pricing-btn {
+  width: 100%; padding: 13px;
+  border: 1px solid var(--border2);
+  background: none; color: var(--text);
+  font-family: var(--ff-body);
+  font-size: 13px; letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer; transition: all 0.2s;
+  border-radius: 2px;
+}
+.pricing-btn:hover { border-color: var(--gold); color: var(--gold); }
+.pricing-card.featured .pricing-btn {
+  background: var(--gold); border-color: var(--gold);
+  color: var(--black); font-weight: 500;
+}
+.pricing-card.featured .pricing-btn:hover { background: var(--gold2); }
+
+/* CTA */
+.cta-section {
+  padding: 120px 48px;
+  text-align: center;
+  background: var(--dark);
+  border-top: 1px solid var(--border);
+  position: relative; overflow: hidden;
+}
+.cta-bg {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 60% 70% at 50% 50%, rgba(201,168,76,0.06) 0%, transparent 70%);
+}
+.cta-section h2 {
+  font-family: var(--ff-display);
+  font-size: clamp(52px, 7vw, 100px);
+  letter-spacing: 2px; line-height: 0.95;
+  margin-bottom: 24px;
+  position: relative;
+}
+.cta-section h2 span {
+  display: block;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--gold);
+}
+.cta-section p {
+  color: var(--muted); max-width: 440px;
+  margin: 0 auto 40px; font-weight: 300;
+  position: relative;
+}
+.cta-actions {
+  display: flex; justify-content: center; gap: 16px;
+  flex-wrap: wrap; position: relative;
+}
+
+/* FOOTER */
+footer {
+  padding: 48px;
+  border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 20px;
+}
+.footer-logo {
+  font-family: var(--ff-display);
+  font-size: 18px; letter-spacing: 1px;
+}
+.footer-logo span { color: var(--gold); }
+.footer-links {
+  display: flex; gap: 24px; list-style: none;
+}
+.footer-links a {
+  color: var(--muted); font-size: 13px;
+  text-decoration: none; transition: color 0.2s;
+}
+.footer-links a:hover { color: var(--text); }
+.footer-copy { font-size: 13px; color: var(--dim); }
+
+/* MOBILE */
+@media (max-width: 768px) {
+  nav { padding: 16px 20px; }
+  .nav-links { display: none; }
+  .hamburger { display: block; }
+
+  .hero { padding: 0 20px 60px; min-height: 100svh; }
+  .hero-bottom { flex-direction: column; align-items: flex-start; }
+  .hero-actions { align-items: flex-start; }
+
+  .problem { padding: 72px 20px; grid-template-columns: 1fr; gap: 48px; }
+  .solution { padding: 72px 20px; }
+  .services-grid { grid-template-columns: 1fr; }
+  .process { padding: 72px 20px; }
+  .process-steps { grid-template-columns: 1fr 1fr; gap: 40px; }
+  .process-steps::before { display: none; }
+  .proof { padding: 72px 20px; }
+  .testimonials { grid-template-columns: 1fr; }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .pricing { padding: 72px 20px; }
+  .pricing-grid { grid-template-columns: 1fr; }
+  .cta-section { padding: 72px 20px; }
+  footer { padding: 32px 20px; flex-direction: column; text-align: center; }
+  .footer-links { justify-content: center; }
+}
+
+/* ANIMATIONS */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.reveal {
+  opacity: 0; transform: translateY(24px);
+  transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* MOBILE NAV */
+.mobile-nav {
+  display: none;
+  position: fixed; inset: 0;
+  background: var(--black);
+  z-index: 600;
+  flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 32px;
+}
+.mobile-nav.open { display: flex; }
+.mobile-nav a {
+  font-family: var(--ff-display);
+  font-size: 48px; letter-spacing: 2px;
+  color: var(--text); text-decoration: none;
+  transition: color 0.2s;
+}
+.mobile-nav a:hover { color: var(--gold); }
+.mobile-close {
+  position: absolute; top: 20px; right: 20px;
+  background: none; border: none;
+  color: var(--muted); font-size: 28px; cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+
+<!-- MOBILE NAV -->
+<div class="mobile-nav" id="mobile-nav">
+  <button class="mobile-close" onclick="closeMobileNav()">✕</button>
+  <a href="#layanan" onclick="closeMobileNav()">Layanan</a>
+  <a href="#proses" onclick="closeMobileNav()">Proses</a>
+  <a href="#harga" onclick="closeMobileNav()">Harga</a>
+  <a href="#konsultasi" onclick="closeMobileNav()" style="color:var(--gold)">Konsultasi</a>
+</div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">
+    <svg class="nav-logo-mark" viewBox="0 0 32 32" fill="none">
+      <path d="M16 2L28 8V16C28 22.627 22.627 28 16 28C9.373 28 4 22.627 4 16V8L16 2Z" stroke="#c9a84c" stroke-width="1" fill="rgba(201,168,76,0.06)"/>
+      <circle cx="16" cy="16" r="4" fill="#c9a84c" opacity="0.6"/>
+      <path d="M16 10V22M10 16H22" stroke="#c9a84c" stroke-width="1" stroke-linecap="round"/>
+    </svg>
+    <span class="nav-logo-text">LOGIKA<span>.AI</span></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#layanan">Layanan</a></li>
+    <li><a href="#proses">Proses</a></li>
+    <li><a href="#harga">Harga</a></li>
+    <li><a href="#konsultasi" class="nav-cta">Konsultasi Gratis</a></li>
+  </ul>
+  <button class="hamburger" onclick="openMobileNav()">☰</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+
+  <div class="hero-eyebrow">Business System Architect</div>
+
+  <h1 class="hero-headline">
+    BISNIS KAMU<br>
+    <span class="line2">HARUS JADI</span><br>
+    <span class="accent">mesin</span> AUTOPILOT
+  </h1>
+
+  <div class="hero-bottom">
+    <p class="hero-desc">
+      Kami membangun sistem bisnis yang <strong>berjalan sendiri</strong> — dari orderan, follow-up, konten, hingga laporan. Kamu fokus tumbuh, sistem yang ngerjain.
+    </p>
+    <div class="hero-actions">
+      <a href="#konsultasi" class="btn-gold">
+        Bangun Sistemmu Sekarang
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </a>
+      <a href="#layanan" class="btn-ghost">
+        Lihat semua layanan
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7H12M12 7L8 3M12 7L8 11" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    scroll
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-section">
+  <div class="marquee-track" id="marquee">
+    <div class="marquee-item"><span class="marquee-dot">◆</span> WA Bot Otomatis <span class="marquee-dot">◆</span> Konten Autopilot <span class="marquee-dot">◆</span> Sales Automation <span class="marquee-dot">◆</span> AI Multi-Agent <span class="marquee-dot">◆</span> Business Intelligence <span class="marquee-dot">◆</span> Lead Generation <span class="marquee-dot">◆</span> Sistem Operasional <span class="marquee-dot">◆</span> WA Bot Otomatis <span class="marquee-dot">◆</span> Konten Autopilot <span class="marquee-dot">◆</span> Sales Automation <span class="marquee-dot">◆</span> AI Multi-Agent <span class="marquee-dot">◆</span> Business Intelligence <span class="marquee-dot">◆</span> Lead Generation <span class="marquee-dot">◆</span> Sistem Operasional</div>
+  </div>
+</div>
+
+<!-- PROBLEM -->
+<section class="problem">
+  <div class="problem-left reveal">
+    <div class="section-label">Masalahnya</div>
+    <h2>Sibuk tapi<br>bisnis <em>jalan di tempat?</em></h2>
+    <p>Bukan karena kamu kurang kerja keras. Tapi karena bisnis kamu belum punya sistem yang bisa jalan tanpa kamu.</p>
+  </div>
+  <div class="problem-list">
+    <div class="problem-item">
+      <div class="problem-num">01</div>
+      <div class="problem-text">
+        <h4>Semua masih manual</h4>
+        <p>Reply WA satu-satu, catat orderan di notes, kirim invoice manual. Capek tapi tidak scale.</p>
+      </div>
+    </div>
+    <div class="problem-item">
+      <div class="problem-num">02</div>
+      <div class="problem-text">
+        <h4>Konten tidak konsisten</h4>
+        <p>Kadang posting kadang tidak. Algoritma tidak suka, reach turun, prospek sepi.</p>
+      </div>
+    </div>
+    <div class="problem-item">
+      <div class="problem-num">03</div>
+      <div class="problem-text">
+        <h4>Leads tidak di-follow up</h4>
+        <p>Banyak yang DM tertarik, tapi tidak ada sistem nurturing. Mereka dingin, pergi ke kompetitor.</p>
+      </div>
+    </div>
+    <div class="problem-item">
+      <div class="problem-num">04</div>
+      <div class="problem-text">
+        <h4>Tidak ada data, tidak ada kontrol</h4>
+        <p>Tidak tahu mana produk terlaris, kapan penjualan puncak, siapa pelanggan terbaik.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOLUTION -->
+<section class="solution" id="layanan">
+  <div class="solution-header reveal">
+    <div class="section-label" style="justify-content:center">Solusinya</div>
+    <h2>SISTEM YANG<br><span>KERJA UNTUKMU</span></h2>
+    <p>Kami tidak jual software. Kami bangun sistem bisnis autopilot yang disesuaikan dengan bisnis kamu.</p>
+  </div>
+  <div class="services-grid">
+    <div class="service-card reveal">
+      <div class="service-num">01</div>
+      <div class="service-icon">🤖</div>
+      <h3>WA & CS Autopilot</h3>
+      <p>Bot WhatsApp yang menjawab pertanyaan, memproses orderan, mengirim invoice, dan follow-up pembayaran — 24 jam tanpa henti.</p>
+      <div class="service-tags">
+        <span class="tag">WhatsApp API</span>
+        <span class="tag">AI Response</span>
+        <span class="tag">Auto Invoice</span>
+      </div>
+    </div>
+    <div class="service-card reveal">
+      <div class="service-num">02</div>
+      <div class="service-icon">📱</div>
+      <h3>Konten Autopilot</h3>
+      <p>AI yang membuat caption, menentukan jadwal optimal, dan memposting ke Instagram & TikTok secara otomatis setiap hari.</p>
+      <div class="service-tags">
+        <span class="tag">AI Content</span>
+        <span class="tag">Auto Post</span>
+        <span class="tag">Multi Platform</span>
+      </div>
+    </div>
+    <div class="service-card reveal">
+      <div class="service-num">03</div>
+      <div class="service-icon">🎯</div>
+      <h3>Sales Automation</h3>
+      <p>Sistem yang menangkap leads dari iklan, mengirim pesan nurturing otomatis, dan mengingatkan tim sales kapan harus closing.</p>
+      <div class="service-tags">
+        <span class="tag">Lead Capture</span>
+        <span class="tag">Nurturing</span>
+        <span class="tag">CRM Sederhana</span>
+      </div>
+    </div>
+    <div class="service-card reveal">
+      <div class="service-num">04</div>
+      <div class="service-icon">📊</div>
+      <h3>Business Intelligence</h3>
+      <p>Dashboard yang merangkum data penjualan, performa konten, dan kesehatan bisnis — dikirim otomatis ke WhatsApp kamu setiap pagi.</p>
+      <div class="service-tags">
+        <span class="tag">Auto Report</span>
+        <span class="tag">Dashboard</span>
+        <span class="tag">WA Digest</span>
+      </div>
+    </div>
+    <div class="service-card reveal">
+      <div class="service-num">05</div>
+      <div class="service-icon">⚡</div>
+      <h3>Workflow Automation</h3>
+      <p>Sambungkan semua tools yang kamu pakai — Tokopedia, Shopee, Google Sheets, WhatsApp — jadi satu ekosistem yang sinkron otomatis.</p>
+      <div class="service-tags">
+        <span class="tag">Integrasi API</span>
+        <span class="tag">No-code Flow</span>
+        <span class="tag">Marketplace Sync</span>
+      </div>
+    </div>
+    <div class="service-card reveal">
+      <div class="service-num">06</div>
+      <div class="service-icon">🧠</div>
+      <h3>AI Multi-Agent</h3>
+      <p>Sistem AI yang bisa melakukan riset, menulis, menjadwalkan, menganalisis, dan mengeksekusi — sekaligus, dalam satu pipeline otomatis.</p>
+      <div class="service-tags">
+        <span class="tag">Multi-Agent</span>
+        <span class="tag">Full Autopilot</span>
+        <span class="tag">Custom AI</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="process" id="proses">
+  <div class="process-header reveal">
+    <div class="section-label">Cara Kerja</div>
+    <h2>4 LANGKAH<br>KE AUTOPILOT</h2>
+  </div>
+  <div class="process-steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <h4>Audit Bisnis</h4>
+      <p>Kami pelajari bisnis kamu dari awal — proses mana yang paling buang waktu dan paling bisa diotomatisasi.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <h4>Desain Sistem</h4>
+      <p>Kami rancang blueprint sistem autopilot yang disesuaikan dengan bisnis, budget, dan target kamu.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <h4>Build & Integrasi</h4>
+      <p>Kami bangun, test, dan integrasikan semua komponen. Kamu tidak perlu menyentuh satu baris kode pun.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">04</div>
+      <h4>Launch & Scale</h4>
+      <p>Sistem live, kami dampingi 30 hari pertama. Setelah itu berjalan sendiri — kamu tinggal monitor.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PROOF -->
+<section class="proof">
+  <div class="proof-header reveal">
+    <div class="section-label" style="justify-content:center">Hasil Nyata</div>
+    <h2>BISNIS YANG SUDAH<br><span>AUTOPILOT</span></h2>
+  </div>
+  <div class="testimonials">
+    <div class="testimonial reveal">
+      <p class="testi-text">Dulu saya reply WA sampai jam 11 malam. Sekarang bot saya yang jawab, saya yang tidur. Omzet malah naik 40% karena response time-nya lebih cepat dari saya.</p>
+      <div class="testi-author">
+        <div class="testi-avatar">AR</div>
+        <div>
+          <div class="testi-name">Ari Rahmat</div>
+          <div class="testi-role">Owner Toko Skincare, Bandung</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial reveal">
+      <p class="testi-text">Sistem konten autopilot-nya gila. Sekarang posting 2x sehari tanpa saya pegang HP. Follower naik 3x dalam 2 bulan, dan saya tidak nulis satu caption pun.</p>
+      <div class="testi-author">
+        <div class="testi-avatar">DS</div>
+        <div>
+          <div class="testi-name">Dian Susanti</div>
+          <div class="testi-role">Fashion Brand Owner, Jakarta</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial reveal">
+      <p class="testi-text">Bisnis coaching saya dulu chaos. Onboarding manual, follow-up lupa. Sekarang semua jalan sendiri. Saya bisa ambil 3x lebih banyak klien tanpa tambah tim.</p>
+      <div class="testi-author">
+        <div class="testi-avatar">BW</div>
+        <div>
+          <div class="testi-name">Budi Wijaya</div>
+          <div class="testi-role">Business Coach, Surabaya</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="stats-row reveal">
+    <div class="stat-item">
+      <span class="stat-num">50+</span>
+      <div class="stat-label">Sistem Dibangun</div>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">3x</span>
+      <div class="stat-label">Rata-rata Peningkatan Efisiensi</div>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">24/7</span>
+      <div class="stat-label">Sistem Berjalan Tanpa Henti</div>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">30</span>
+      <div class="stat-label">Hari Garansi Pendampingan</div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="harga">
+  <div class="pricing-header reveal">
+    <div class="section-label" style="justify-content:center">Investasi</div>
+    <h2>PILIH PAKET<br>SISTEMMU</h2>
+  </div>
+  <div class="pricing-grid">
+    <div class="pricing-card reveal">
+      <div class="pricing-tier">Starter</div>
+      <div class="pricing-price">1.5jt <span>/ sistem</span></div>
+      <p class="pricing-desc">Untuk bisnis yang baru mau mulai otomasi</p>
+      <ul class="pricing-features">
+        <li>1 sistem autopilot</li>
+        <li>Setup & konfigurasi penuh</li>
+        <li>Training penggunaan</li>
+        <li>Support 14 hari</li>
+        <li>Dokumentasi sistem</li>
+      </ul>
+      <button class="pricing-btn" onclick="scrollToContact()">Mulai Sekarang</button>
+    </div>
+    <div class="pricing-card featured reveal">
+      <div class="featured-badge">Paling Populer</div>
+      <div class="pricing-tier">Growth</div>
+      <div class="pricing-price">3.5jt <span>/ paket</span></div>
+      <p class="pricing-desc">Untuk bisnis yang siap scale dengan sistem lengkap</p>
+      <ul class="pricing-features">
+        <li>3 sistem terintegrasi</li>
+        <li>WA Bot + Konten + Sales</li>
+        <li>Dashboard monitoring</li>
+        <li>Support 30 hari</li>
+        <li>1x revisi sistem</li>
+        <li>Konsultasi strategi</li>
+      </ul>
+      <button class="pricing-btn" onclick="scrollToContact()">Pilih Growth</button>
+    </div>
+    <div class="pricing-card reveal">
+      <div class="pricing-tier">Enterprise</div>
+      <div class="pricing-price">Custom</div>
+      <p class="pricing-desc">Untuk bisnis dengan kebutuhan kompleks dan skala besar</p>
+      <ul class="pricing-features">
+        <li>Semua sistem tanpa batas</li>
+        <li>AI Multi-Agent custom</li>
+        <li>Integrasi marketplace</li>
+        <li>Dedicated support</li>
+        <li>SLA & maintenance</li>
+        <li>Tim dedicated kamu</li>
+      </ul>
+      <button class="pricing-btn" onclick="scrollToContact()">Diskusi Dulu</button>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="konsultasi">
+  <div class="cta-bg"></div>
+  <h2 class="reveal">
+    SIAP BUAT
+    <span>BISNIS AUTOPILOT?</span>
+  </h2>
+  <p class="reveal">Konsultasi gratis 30 menit. Kami audit bisnis kamu dan tunjukkan sistem apa yang paling cocok.</p>
+  <div class="cta-actions reveal">
+    <a href="https://wa.me/6281234567890?text=Halo%20Logika%20Digital%2C%20saya%20mau%20konsultasi%20sistem%20autopilot" class="btn-gold" target="_blank">
+      💬 Konsultasi via WhatsApp
+    </a>
+    <a href="https://lynk.id/fathur_88" class="btn-ghost" target="_blank">
+      Lihat portofolio lengkap
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7H12M12 7L8 3M12 7L8 11" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">LOGIKA<span>.AI</span></div>
+  <ul class="footer-links">
+    <li><a href="#layanan">Layanan</a></li>
+    <li><a href="#proses">Proses</a></li>
+    <li><a href="#harga">Harga</a></li>
+    <li><a href="#konsultasi">Kontak</a></li>
+  </ul>
+  <div class="footer-copy">© 2026 Logika Digital.ai — Business System Architect</div>
+</footer>
+
+<script>
+// Cursor
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+function animCursor() {
+  cursor.style.left = mx - 4 + 'px';
+  cursor.style.top = my - 4 + 'px';
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  ring.style.left = rx - 16 + 'px';
+  ring.style.top = ry - 16 + 'px';
+  requestAnimationFrame(animCursor);
+}
+animCursor();
+
+// Nav scroll
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60);
+});
+
+// Reveal on scroll
+const reveals = document.querySelectorAll('.reveal, .problem-item, .step');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 80);
+    }
+  });
+}, { threshold: 0.15 });
+reveals.forEach(el => observer.observe(el));
+
+// Mobile nav
+function openMobileNav() { document.getElementById('mobile-nav').classList.add('open'); }
+function closeMobileNav() { document.getElementById('mobile-nav').classList.remove('open'); }
+
+function scrollToContact() {
+  document.getElementById('konsultasi').scrollIntoView({ behavior: 'smooth' });
+}
+
+// Animate numbers
+function animateNum(el, target, suffix) {
+  let current = 0;
+  const step = target / 40;
+  const timer = setInterval(() => {
+    current += step;
+    if (current >= target) { current = target; clearInterval(timer); }
+    el.textContent = Math.floor(current) + suffix;
+  }, 30);
+}
+const statObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const nums = e.target.querySelectorAll('.stat-num');
+      nums[0] && animateNum(nums[0], 50, '+');
+      nums[1] && animateNum(nums[1], 3, 'x');
+      statObserver.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.5 });
+const statsRow = document.querySelector('.stats-row');
+if (statsRow) statObserver.observe(statsRow);
+</script>
+</body>
+</html>
